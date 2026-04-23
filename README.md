@@ -2,7 +2,12 @@
 
 Flutter app for Honda SH160i: home UI, clean architecture with Cubit, and frame-based 360 view.
 
+## Preview
+
+![Home screen — SH 160i](docs/screenshot-home.png)
+
 ## Run
+
 
 ```bash
 flutter pub get
