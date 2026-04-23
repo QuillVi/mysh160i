@@ -1,17 +1,17 @@
-# mymotorcycle
+# mysh160i
 
-A new Flutter project.
+Flutter app for Honda SH160i: home UI, clean architecture with Cubit, and frame-based 360 view.
 
-## Getting Started
+## Run
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
+## Project
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Package name in code: `mymotorcycle` (from `pubspec.yaml`).
+- Remote repo: [QuillVi/mysh160i](https://github.com/QuillVi/mysh160i).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+For Flutter help, see [Flutter documentation](https://docs.flutter.dev/).
