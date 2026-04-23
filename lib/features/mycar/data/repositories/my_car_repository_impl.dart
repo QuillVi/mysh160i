@@ -3,5 +3,23 @@ import 'package:mymotorcycle/features/mycar/domain/repositories/my_car_repositor
 
 class MyCarRepositoryImpl implements MyCarRepository {
   @override
-  MyCarInfo getMyCarInfo() => const MyCarInfo('My Car');
+  MyCarInfo getMyCarInfo() {
+    return const MyCarInfo(
+      greeting: 'Hello, Shinn',
+      kicker: 'MY GARAGE',
+      modelName: 'SH 160i',
+      statusText: 'Ready to drive',
+      batteryPercent: 80,
+      weather: 'Sunny',
+      temperatureC: 28,
+      stats: [
+        MyCarStat(label: 'Role', value: 'Primary vehicle'),
+        MyCarStat(label: 'Nickname', value: '—'),
+        MyCarStat(label: 'Bluetooth', value: 'Connected'),
+        MyCarStat(label: 'Last sync', value: '—'),
+        MyCarStat(label: 'Firmware', value: '—'),
+        MyCarStat(label: 'Notes', value: 'Connect a backend to show live data.'),
+      ],
+    );
+  }
 }
