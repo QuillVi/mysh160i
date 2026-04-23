@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-class DetailStat extends Equatable {
-  const DetailStat({required this.label, required this.value});
+class MapStat extends Equatable {
+  const MapStat({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -10,8 +10,8 @@ class DetailStat extends Equatable {
   List<Object?> get props => [label, value];
 }
 
-class DetailInfo extends Equatable {
-  const DetailInfo({
+class MapInfo extends Equatable {
+  const MapInfo({
     required this.greeting,
     required this.kicker,
     required this.modelName,
@@ -29,7 +29,7 @@ class DetailInfo extends Equatable {
   final int batteryPercent;
   final String weather;
   final int temperatureC;
-  final List<DetailStat> stats;
+  final List<MapStat> stats;
 
   @override
   List<Object?> get props => [

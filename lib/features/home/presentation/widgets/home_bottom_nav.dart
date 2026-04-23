@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mymotorcycle/core/constants/app_colors.dart';
 
 class HomeBottomNav extends StatelessWidget {
@@ -13,10 +14,16 @@ class HomeBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = <IconData>[
+    final items = <String>[
+      'assets/lottie/nav_home.json',
+      'assets/lottie/nav_motorcycle.json',
+      'assets/lottie/nav_search.json',
+      'assets/lottie/nav_profile.json',
+    ];
+    final fallbackIcons = <IconData>[
       Icons.home_outlined,
-      Icons.map_outlined,
       Icons.pedal_bike_outlined,
+      Icons.search_outlined,
       Icons.person_outline,
     ];
 
@@ -63,12 +70,31 @@ class HomeBottomNav extends StatelessWidget {
                   transitionBuilder: (child, animation) {
                     return FadeTransition(opacity: animation, child: child);
                   },
-                  child: Icon(
-                    items[index],
+                  child: AnimatedOpacity(
                     key: ValueKey('${items[index]}-$isSelected'),
-                    size: 30,
-                    weight: 300,
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    duration: const Duration(milliseconds: 220),
+                    opacity: isSelected ? 1 : 0.6,
+                    child: isSelected
+                        ? ColorFiltered(
+                            colorFilter: const ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcATop,
+                            ),
+                            child: Lottie.asset(
+                              items[index],
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.contain,
+                              animate: true,
+                              repeat: true,
+                            ),
+                          )
+                        : Icon(
+                            fallbackIcons[index],
+                            size: 28,
+                            color: AppColors.textPrimary,
+                            weight: 300,
+                          ),
                   ),
                 ),
               ),

@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
+  lottie: ^3.3.1
   model_viewer_plus: ^1.10.0
 
 dev_dependencies:
@@ -48,6 +49,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -62,7 +64,14 @@ flutter:
 
   assets:
     - sh160i.png
-    - assets/models/
+    - assets/lottie/notification_bell.json
+    - assets/lottie/looping_sun.json
+    - assets/lottie/electric.json
+    - assets/lottie/setting.json
+    - assets/lottie/nav_home.json
+    - assets/lottie/nav_search.json
+    - assets/lottie/nav_motorcycle.json
+    - assets/lottie/nav_profile.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -89,3 +98,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/app_icon.png"
+  adaptive_icon_monochrome: "assets/app_icon.png"
+  adaptive_icon_foreground_inset: 8
+  remove_alpha_ios: true

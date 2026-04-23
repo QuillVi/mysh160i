@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mymotorcycle/core/constants/app_colors.dart';
-import 'package:mymotorcycle/core/widgets/circle_icon_button.dart';
-import 'package:mymotorcycle/features/detail/presentation/cubit/detail_cubit.dart';
-import 'package:mymotorcycle/features/detail/presentation/pages/detail_page.dart';
 import 'package:mymotorcycle/features/home/domain/entities/home_dashboard.dart';
 import 'package:mymotorcycle/features/home/presentation/cubit/home_cubit.dart';
 import 'package:mymotorcycle/features/home/presentation/cubit/home_state.dart';
-import 'package:mymotorcycle/features/home/presentation/widgets/battery_badge.dart';
 import 'package:mymotorcycle/features/home/presentation/widgets/home_bottom_nav.dart';
 import 'package:mymotorcycle/features/home/presentation/widgets/status_chip.dart';
+import 'package:mymotorcycle/features/map/presentation/cubit/map_cubit.dart';
+import 'package:mymotorcycle/features/map/presentation/pages/map_page.dart';
 import 'package:mymotorcycle/features/mycar/presentation/cubit/my_car_cubit.dart';
 import 'package:mymotorcycle/features/mycar/presentation/pages/my_car_page.dart';
 import 'package:mymotorcycle/features/setting/presentation/cubit/setting_cubit.dart';
@@ -27,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<HomeCubit>().loadDashboard();
-    context.read<DetailCubit>().load();
+    context.read<MapCubit>().load();
     context.read<MyCarCubit>().load();
     context.read<SettingCubit>().load();
   }
@@ -39,43 +38,75 @@ class _HomePageState extends State<HomePage> {
         final dashboard = state.dashboard;
         if (dashboard == null) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            backgroundColor: Colors.black,
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.neon),
+            ),
           );
         }
 
         return Scaffold(
-          body: SafeArea(
-            child: Stack(
-              children: [
-                if (state.selectedTab == 0)
-                  Positioned.fill(
-                    child: Image.asset(
-                      'sh160i.png',
-                      fit: BoxFit.cover,
-                      alignment: Alignment.center,
-                    ),
+          backgroundColor: Colors.black,
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (state.selectedTab == 0)
+                Positioned.fill(
+                  child: Image.asset(
+                    'sh160i.png',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
                   ),
-                IndexedStack(
-                  index: state.selectedTab,
+                ),
+              SafeArea(
+                child: Stack(
                   children: [
-                    _HomeMainContent(dashboard: dashboard),
-                    const DetailPage(),
-                    const MyCarPage(),
-                    const SettingPage(),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 650),
+                      switchInCurve: Curves.easeOutQuart,
+                      switchOutCurve: Curves.easeInOutCubicEmphasized,
+                      transitionBuilder: (child, animation) {
+                        final slide = Tween<Offset>(
+                          begin: const Offset(0.06, 0),
+                          end: Offset.zero,
+                        ).animate(animation);
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(position: slide, child: child),
+                        );
+                      },
+                      layoutBuilder: (currentChild, previousChildren) {
+                        return Stack(
+                          children: [
+                            ...previousChildren,
+                            ?currentChild,
+                          ],
+                        );
+                      },
+                      child: KeyedSubtree(
+                        key: ValueKey(state.selectedTab),
+                        child: switch (state.selectedTab) {
+                          0 => _HomeMainContent(dashboard: dashboard),
+                          1 => const MyCarPage(),
+                          2 => const MapPage(),
+                          _ => const SettingPage(),
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 32,
+                      child: HomeBottomNav(
+                        selectedIndex: state.selectedTab,
+                        onTap: (index) =>
+                            context.read<HomeCubit>().changeTab(index),
+                      ),
+                    ),
                   ],
                 ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 32,
-                  child: HomeBottomNav(
-                    selectedIndex: state.selectedTab,
-                    onTap: (index) =>
-                        context.read<HomeCubit>().changeTab(index),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -97,16 +128,7 @@ class _HomeMainContent extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.person_outline,
-                  color: AppColors.textPrimary,
-                  size: 24,
-                  weight: 300,
-                ),
-              ),
+              const _AnimatedProfileAvatar(),
               const SizedBox(width: 14),
               Text(
                 dashboard.greeting,
@@ -117,20 +139,9 @@ class _HomeMainContent extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const CircleIconButton(
-                icon: Icons.settings_outlined,
-                size: 50,
-                iconSize: 24,
-                iconWeight: 300,
-              ),
+              const _AnimatedSettingButton(),
               const SizedBox(width: 10),
-              const CircleIconButton(
-                icon: Icons.notifications_outlined,
-                backgroundColor: AppColors.neon,
-                size: 50,
-                iconSize: 24,
-                iconWeight: 300,
-              ),
+              const _AnimatedNotifyButton(),
             ],
           ),
           const SizedBox(height: 16),
@@ -162,7 +173,7 @@ class _HomeMainContent extends StatelessWidget {
                 Positioned(
                   left: 12,
                   top: 14,
-                  child: BatteryBadge(
+                  child: _AnimatedBatteryBadge(
                     percent: dashboard.batteryPercent,
                   ),
                 ),
@@ -182,12 +193,7 @@ class _HomeMainContent extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Icon(
-                        Icons.wb_sunny_outlined,
-                        size: 20,
-                        color: AppColors.neon,
-                        weight: 300,
-                      ),
+                      const _AnimatedSunIcon(),
                       const SizedBox(height: 2),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -221,6 +227,128 @@ class _HomeMainContent extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AnimatedNotifyButton extends StatelessWidget {
+  const _AnimatedNotifyButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: const BoxDecoration(
+        color: AppColors.neon,
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Lottie.asset(
+        'assets/lottie/notification_bell.json',
+        width: 32,
+        height: 32,
+        fit: BoxFit.contain,
+        repeat: true,
+      ),
+    );
+  }
+}
+
+class _AnimatedSettingButton extends StatelessWidget {
+  const _AnimatedSettingButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Lottie.asset(
+        'assets/lottie/setting.json',
+        width: 32,
+        height: 32,
+        fit: BoxFit.contain,
+        repeat: true,
+      ),
+    );
+  }
+}
+
+class _AnimatedBatteryBadge extends StatelessWidget {
+  const _AnimatedBatteryBadge({required this.percent});
+
+  final int percent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 44,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.neon,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Lottie.asset(
+            'assets/lottie/electric.json',
+            width: 32,
+            height: 32,
+            fit: BoxFit.contain,
+            repeat: true,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '$percent%',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnimatedSunIcon extends StatelessWidget {
+  const _AnimatedSunIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 32,
+      height: 32,
+      child: Lottie.asset(
+        'assets/lottie/looping_sun.json',
+        fit: BoxFit.contain,
+        repeat: true,
+      ),
+    );
+  }
+}
+
+class _AnimatedProfileAvatar extends StatelessWidget {
+  const _AnimatedProfileAvatar();
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: 24,
+      backgroundColor: Colors.white,
+      child: Lottie.asset(
+        'assets/lottie/nav_profile.json',
+        width: 30,
+        height: 30,
+        fit: BoxFit.contain,
+        repeat: true,
       ),
     );
   }
