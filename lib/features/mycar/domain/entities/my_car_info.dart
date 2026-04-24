@@ -10,6 +10,21 @@ class MyCarStat extends Equatable {
   List<Object?> get props => [label, value];
 }
 
+class MyCarSection extends Equatable {
+  const MyCarSection({
+    required this.title,
+    required this.subtitle,
+    required this.stats,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<MyCarStat> stats;
+
+  @override
+  List<Object?> get props => [title, subtitle, stats];
+}
+
 class MyCarInfo extends Equatable {
   const MyCarInfo({
     required this.greeting,
@@ -19,7 +34,7 @@ class MyCarInfo extends Equatable {
     required this.batteryPercent,
     required this.weather,
     required this.temperatureC,
-    required this.stats,
+    required this.sections,
   });
 
   final String greeting;
@@ -29,7 +44,7 @@ class MyCarInfo extends Equatable {
   final int batteryPercent;
   final String weather;
   final int temperatureC;
-  final List<MyCarStat> stats;
+  final List<MyCarSection> sections;
 
   @override
   List<Object?> get props => [
@@ -40,6 +55,6 @@ class MyCarInfo extends Equatable {
         batteryPercent,
         weather,
         temperatureC,
-        stats,
+        sections,
       ];
 }
